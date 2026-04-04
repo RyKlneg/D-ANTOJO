@@ -5,6 +5,7 @@ import { CartProvider } from '../context/CartContext'
 import CartDrawer from '../components/CartDrawer'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import Chatbot from '../components/Chatbot'
 
 export const metadata: Metadata = {
   title: "D'Antojo",
@@ -27,6 +28,7 @@ export default function RootLayout({
           {children}
           <Footer />
           <CartDrawer />
+          <Chatbot />
         </CartProvider>
       </body>
     </html>

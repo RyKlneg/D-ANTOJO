@@ -19,6 +19,7 @@ export default function CartDrawer() {
     cartItems,
     removeItem,
     updateQuantity,
+    clearCart,
     subtotal
   } = useCart()
 
@@ -81,7 +82,7 @@ export default function CartDrawer() {
   }
 
   const handleFinalize = () => {
-    const whatsappNumber = '521234567890' // Placeholder
+    const whatsappNumber = '529931555701' // Placeholder
     const itemsList = cartItems
       .map(item => `- ${item.name} x${item.quantity} (${item.price})`)
       .join('%0A')
@@ -91,7 +92,12 @@ export default function CartDrawer() {
     const message = `Hola! Me gustaría realizar un pedido de D'Antojo:%0A%0A*Pedido:* ${orderNumber}%0A*Método de Pago:* ${paymentText}%0A%0A*Productos:*%0A${itemsList}%0A%0A*Total:* $${subtotal.toLocaleString()} MXN%0A%0AGracias!`
 
     window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank')
-    setIsCartOpen(false)
+    
+    // Clear cart and show thank you screen
+    setTimeout(() => {
+      clearCart()
+      setStep(4)
+    }, 500)
   }
 
   return (
@@ -126,7 +132,7 @@ export default function CartDrawer() {
                 <div className="flex items-center gap-2">
                   <ShoppingBag className="text-dantojo-gold" size={24} />
                   <h2 className="text-xl font-display font-medium text-dantojo-dark">
-                    {step === 1 ? 'Tu Carrito' : step === 2 ? 'Método de Pago' : step === 2.5 ? 'Datos de Tarjeta' : 'Confirmación'}
+                    {step === 1 ? 'Tu Carrito' : step === 2 ? 'Método de Pago' : step === 2.5 ? 'Datos de Tarjeta' : step === 4 ? '¡Listo!' : 'Confirmación'}
                   </h2>
                 </div>
               </div>
@@ -254,8 +260,8 @@ export default function CartDrawer() {
                           key={method.id}
                           onClick={() => setPaymentMethod(method.id)}
                           className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 transition-all duration-300 ${paymentMethod === method.id
-                              ? 'border-dantojo-gold bg-dantojo-gold/5 shadow-md'
-                              : 'border-dantojo-tan bg-white hover:border-dantojo-tan/60'
+                            ? 'border-dantojo-gold bg-dantojo-gold/5 shadow-md'
+                            : 'border-dantojo-tan bg-white hover:border-dantojo-tan/60'
                             }`}
                         >
                           <div className={`p-3 rounded-xl ${paymentMethod === method.id ? 'bg-dantojo-gold text-white' : 'bg-dantojo-beige text-dantojo-coffee'}`}>
@@ -372,6 +378,42 @@ export default function CartDrawer() {
                     <p className="text-[10px] text-dantojo-coffee/60">
                       Al finalizar, te enviaremos a WhatsApp para confirmar los detalles de entrega.
                     </p>
+                  </motion.div>
+                )}
+
+                {step === 4 && (
+                  <motion.div
+                    key="step4"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="flex-1 p-6 flex flex-col items-center justify-center text-center space-y-8"
+                  >
+                    <div className="w-24 h-24 bg-dantojo-gold/10 text-dantojo-gold rounded-full flex items-center justify-center shadow-soft">
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: 'spring', damping: 10, stiffness: 100, delay: 0.2 }}
+                      >
+                        <CheckCircle2 size={56} />
+                      </motion.div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h3 className="text-3xl font-display text-dantojo-dark">¡Muchas Gracias!</h3>
+                      <p className="text-dantojo-coffee/70 max-w-[280px]">
+                        Tu pedido ha sido enviado con éxito. En breve nos pondremos en contacto contigo para los detalles de entrega.
+                      </p>
+                    </div>
+
+                    <div className="w-full pt-8">
+                      <button
+                        onClick={() => setIsCartOpen(false)}
+                        className="w-full bg-[#2B1B12] text-white py-4 rounded-2xl font-bold uppercase tracking-widest hover:bg-dantojo-dark transition-all shadow-premium active:scale-95"
+                      >
+                        Volver a la tienda
+                      </button>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
