@@ -19,6 +19,7 @@ export default function CartDrawer() {
     cartItems,
     removeItem,
     updateQuantity,
+    toggleItemType,
     clearCart,
     subtotal
   } = useCart()
@@ -84,7 +85,11 @@ export default function CartDrawer() {
   const handleFinalize = () => {
     const whatsappNumber = '529931555701' // Placeholder
     const itemsList = cartItems
-      .map(item => `- ${item.name} x${item.quantity} (${item.price})`)
+      .map(item => {
+        const typeLabel = item.selectedType === 'slice' ? '(Rebanada)' : '(Pastel Completo)'
+        const activePrice = item.selectedType === 'cake' ? item.price : (item.slicePrice || item.price)
+        return `- ${item.name} ${typeLabel} x${item.quantity} (${activePrice})`
+      })
       .join('%0A')
 
     const paymentText = paymentMethod === 'tarjeta' ? 'Tarjeta' : paymentMethod === 'efectivo' ? 'Efectivo' : 'Pago en Sucursal'
@@ -191,11 +196,30 @@ export default function CartDrawer() {
                               </div>
                               <div className="flex justify-between items-center">
                                 <div className="space-y-0.5">
-                                  <p className="text-dantojo-gold font-bold">{item.price}</p>
-                                  {item.slicePrice && (
-                                    <p className="text-[10px] text-dantojo-coffee/40 uppercase tracking-tighter">
-                                      Rebanada: <span className="font-medium text-dantojo-coffee/60">{item.slicePrice}</span>
-                                    </p>
+                                  <p className="text-dantojo-gold font-bold">
+                                    {item.selectedType === 'cake' ? item.price : (item.slicePrice || item.price)}
+                                  </p>
+                                  {item.slicePrice && item.slicePrice !== '-' && (
+                                    <div className="flex bg-dantojo-beige/40 p-0.5 rounded-lg w-fit mt-1 border border-dantojo-tan/20">
+                                      {['cake', 'slice'].map((type) => (
+                                        <button
+                                          key={type}
+                                          onClick={() => type !== item.selectedType && toggleItemType(item.id)}
+                                          className={`relative px-2 py-0.5 text-[10px] uppercase font-bold tracking-tighter transition-colors z-10 ${
+                                            item.selectedType === type ? 'text-white' : 'text-dantojo-coffee/60 hover:text-dantojo-dark'
+                                          }`}
+                                        >
+                                          {item.selectedType === type && (
+                                            <motion.div
+                                              layoutId={`toggle-${item.id}`}
+                                              className="absolute inset-0 bg-[#2B1B12] rounded-md -z-10"
+                                              transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                                            />
+                                          )}
+                                          {type === 'cake' ? 'P' : 'R'}
+                                        </button>
+                                      ))}
+                                    </div>
                                   )}
                                 </div>
                                 <div className="flex items-center gap-3 bg-dantojo-beige/50 rounded-lg px-2 py-1">
@@ -350,9 +374,9 @@ export default function CartDrawer() {
                       <p className="text-3xl font-bold text-dantojo-gold tracking-widest">{orderNumber}</p>
                     </div>
 
-                    <div className="bg-white p-6 rounded-3xl shadow-premium space-y-4 border border-dantojo-tan/50">
-                      <QRCodeSVG value={orderNumber} size={150} level="H" includeMargin />
-                      <p className="text-[10px] text-dantojo-coffee/60 uppercase tracking-widest">Escanea este código al pagar</p>
+                    <div className="bg-white p-6 rounded-3xl shadow-premium space-y-4 border border-dantojo-tan/50 flex flex-col items-center mx-auto">
+                      <QRCodeSVG value={orderNumber} size={150} level="H" includeMargin className="mx-auto" />
+                      <p className="text-[10px] text-dantojo-coffee/60 uppercase tracking-widest text-center">Escanea este código al pagar</p>
                     </div>
 
                     <div className="w-full bg-dantojo-beige/30 p-4 rounded-2xl text-left space-y-2">

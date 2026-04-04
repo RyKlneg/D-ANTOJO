@@ -69,20 +69,19 @@ export default function Navbar() {
   const currentBg = sectionColors[activeSection] || 'bg-dantojo-beige'
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-500 backdrop-blur-sm ${
-       !isHomePage ? 'bg-dantojo-beige' : 
-       isScrolled ? `${currentBg}` : 'bg-transparent'
-    }`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-500 backdrop-blur-sm ${!isHomePage ? 'bg-dantojo-beige' :
+      isScrolled ? `${currentBg}` : 'bg-transparent'
+      }`}>
       <div className="max-w-[1440px] mx-auto px-6 lg:pl-4 lg:pr-12">
         <div className="flex items-center h-20 relative">
           {/* Left: Logo */}
           <div className="flex-1 flex justify-start">
-            <a href="#inicio" className="inline-flex items-center gap-2">
-              <div className="relative">
+            <a href="#inicio" className="flex items-center group">
+              <div className="w-auto transform group-hover:scale-105 transition-transform duration-500">
                 <img
                   src="/images/D.png"
                   alt="D'Antojo Logo"
-                  className="h-16 w-auto object-contain"
+                  className="h-10 md:h-14 w-auto object-contain"
                 />
               </div>
             </a>

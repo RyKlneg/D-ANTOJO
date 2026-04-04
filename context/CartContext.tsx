@@ -5,8 +5,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 export interface CartItem {
   id: number
   name: string
-  price: string
-  slicePrice?: string
+  price: string       // This will always store the whole cake price
+  slicePrice?: string // Optional slice price
+  selectedType: 'cake' | 'slice'
   image: string
   quantity: number
 }
@@ -19,6 +20,7 @@ interface CartContextType {
   addItem: (product: any) => void
   removeItem: (id: number) => void
   updateQuantity: (id: number, quantity: number) => void
+  toggleItemType: (id: number) => void
   clearCart: () => void
   subtotal: number
 }
@@ -49,7 +51,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0)
   
   const subtotal = cartItems.reduce((total, item) => {
-    const priceNumeric = parseFloat(item.price.replace(/[^0-9.]/g, ''))
+    const activePrice = item.selectedType === 'cake' ? item.price : (item.slicePrice || item.price)
+    const priceNumeric = parseFloat(activePrice.replace(/[^0-9.]/g, ''))
     return total + priceNumeric * item.quantity
   }, 0)
 
@@ -61,7 +64,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         )
       }
-      return [...prev, { ...product, quantity: 1 }]
+      return [...prev, { ...product, quantity: 1, selectedType: 'cake' }]
     })
     setIsCartOpen(true) // Open cart when item is added
   }
@@ -80,6 +83,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     )
   }
 
+  const toggleItemType = (id: number) => {
+    setCartItems((prev) =>
+      prev.map((item) => {
+        if (item.id === id && item.slicePrice && item.slicePrice !== '-') {
+          return {
+            ...item,
+            selectedType: item.selectedType === 'cake' ? 'slice' : 'cake'
+          }
+        }
+        return item
+      })
+    )
+  }
+
   const clearCart = () => {
     setCartItems([])
   }
@@ -94,6 +111,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         addItem,
         removeItem,
         updateQuantity,
+        toggleItemType,
         clearCart,
         subtotal,
       }}
