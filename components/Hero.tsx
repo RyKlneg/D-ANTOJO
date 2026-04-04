@@ -25,12 +25,14 @@ export default function Hero() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
               <a
                 href="#productos"
-                className="group inline-flex items-center gap-0 hover:gap-3 bg-[#2B1B12] text-white px-4 py-4 rounded-full font-medium hover:bg-dantojo-dark transition-all duration-300 shadow-premium"
+                className="group relative inline-flex items-center justify-start bg-[#2B1B12] text-white h-14 rounded-full font-medium hover:bg-dantojo-dark transition-all duration-500 shadow-premium overflow-hidden pl-4 pr-12 hover:pr-4"
               >
-                <ArrowRight size={20} className="min-w-[20px]" />
-                <span className="max-w-0 overflow-hidden whitespace-nowrap transition-all duration-500 group-hover:max-w-[150px] opacity-0 group-hover:opacity-100 uppercase tracking-wider">
+                <span className="max-w-0 overflow-hidden whitespace-nowrap transition-all duration-500 group-hover:max-w-[150px] opacity-0 group-hover:opacity-100 group-hover:mr-3 uppercase tracking-[0.2em] text-sm">
                   Ordena ya
                 </span>
+                <div className="absolute right-4 group-hover:relative group-hover:right-0 transition-all duration-500 text-dantojo-gold">
+                  <ArrowRight size={22} strokeWidth={2.5} />
+                </div>
               </a>
             </div>
           </div>
@@ -43,7 +45,9 @@ export default function Hero() {
               className="absolute pointer-events-none select-none max-w-none
                          w-[500px] md:w-[400px] lg:w-[1200px]
                          -right-[80px] md:-right-[300px] lg:-right-[600px]
-                         top-1/2 -translate-y-1/2 transition-all duration-500"
+                         top-1/2 -translate-y-1/2 transition-all duration-500
+                         filter drop-shadow-[0_50px_60px_rgba(0,0,0,0.5)]
+                         animate-float"
             />
           </div>
         </div>
