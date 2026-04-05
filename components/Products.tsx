@@ -81,7 +81,7 @@ export default function Products() {
           {/* Footer Button */}
           <div className="flex justify-center">
             <Link 
-              href="/productos"
+              href="/catalogo"
               className="flex items-center gap-3 bg-[#2B1B12] text-white px-10 py-5 rounded-full font-medium hover:bg-dantojo-dark transition-all duration-300 shadow-premium uppercase tracking-widest text-sm"
             >
               <ShoppingBag size={22} />

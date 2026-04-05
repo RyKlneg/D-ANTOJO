@@ -46,8 +46,7 @@ export default function Hero() {
                          w-[500px] md:w-[400px] lg:w-[1200px]
                          -right-[80px] md:-right-[300px] lg:-right-[600px]
                          top-1/2 -translate-y-1/2 transition-all duration-500
-                         filter drop-shadow-[0_50px_60px_rgba(0,0,0,0.5)]
-                         animate-float"
+                         filter drop-shadow-[0_50px_60px_rgba(0,0,0,0.5)]"
             />
           </div>
         </div>

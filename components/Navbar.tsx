@@ -5,13 +5,14 @@ import { Menu, X, ShoppingBag } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 
 const navLinks = [
-  { name: 'Inicio', href: '#inicio' },
-  { name: 'Nosotros', href: '#nosotros' },
-  { name: 'Productos', href: '#productos' },
-  { name: 'Galería', href: '#galeria' },
-  { name: 'Contáctanos', href: '#contacto' },
+  { name: 'Inicio', href: '/' },
+  { name: 'Nosotros', href: '/nosotros' },
+  { name: 'Productos', href: '/productos' },
+  { name: 'Galería', href: '/galeria' },
+  { name: 'Contáctanos', href: '/contacto' },
 ]
 
 export default function Navbar() {
@@ -44,7 +45,16 @@ export default function Navbar() {
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          setActiveSection(entry.target.id)
+          const sectionId = entry.target.id
+          setActiveSection(sectionId)
+
+          // Sync URL during scroll without hash (only on root-managed paths)
+          if (pathname === '/' || navLinks.some(link => pathname === link.href)) {
+             const newPath = sectionId === 'inicio' ? '/' : `/${sectionId}`
+             if (window.location.pathname !== newPath) {
+                window.history.pushState(null, '', newPath)
+             }
+          }
         }
       })
     }
@@ -76,7 +86,7 @@ export default function Navbar() {
         <div className="flex items-center h-20 relative">
           {/* Left: Logo */}
           <div className="flex-1 flex justify-start">
-            <a href="#inicio" className="flex items-center group">
+            <Link href="/" className="flex items-center group">
               <div className="w-auto transform group-hover:scale-105 transition-transform duration-500">
                 <img
                   src="/images/D.png"
@@ -84,22 +94,27 @@ export default function Navbar() {
                   className="h-10 md:h-14 w-auto object-contain"
                 />
               </div>
-            </a>
+            </Link>
           </div>
 
           {/* Center: Desktop Menu */}
           <div className="hidden md:flex items-center gap-10">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.name}
                 href={link.href}
+                scroll={false}
                 className="relative group py-2"
               >
-                <span className="text-sm font-medium text-[#2B1B12] tracking-wide">
+                <span className="text-sm font-medium text-[#2B1B12] tracking-wide focus:outline-none">
                   {link.name.toUpperCase()}
                 </span>
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#2B1B12] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center" />
-              </a>
+                <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-[#2B1B12] transform transition-transform duration-300 origin-center ${
+                  activeSection === (link.href === '/' ? 'inicio' : link.href.replace('/', '')) 
+                    ? 'scale-x-100' 
+                    : 'scale-x-0 group-hover:scale-x-100'
+                }`} />
+              </Link>
             ))}
           </div>
 
@@ -146,14 +161,19 @@ export default function Navbar() {
           <div className="md:hidden bg-dantojo-cream border-t border-dantojo-tan">
             <div className="flex flex-col py-4">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className="px-6 py-3 text-dantojo-coffee font-medium hover:bg-dantojo-tan/50 transition-colors"
+                  scroll={false}
+                  className={`px-6 py-3 font-medium transition-colors ${
+                    activeSection === (link.href === '/' ? 'inicio' : link.href.replace('/', '')) 
+                      ? 'text-dantojo-gold bg-dantojo-tan/20' 
+                      : 'text-dantojo-coffee hover:bg-dantojo-tan/50'
+                  }`}
                 >
                   {link.name}
-                </a>
+                </Link>
               ))}
             </div>
           </div>

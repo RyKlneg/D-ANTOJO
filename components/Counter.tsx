@@ -11,7 +11,7 @@ interface CounterProps {
 
 export default function Counter({ value, duration = 2, suffix = '' }: CounterProps) {
   const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const isInView = useInView(ref, { once: true, margin: "-20px" })
   
   const motionValue = useMotionValue(0)
   const springValue = useSpring(motionValue, {
