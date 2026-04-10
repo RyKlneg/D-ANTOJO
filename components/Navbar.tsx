@@ -8,12 +8,19 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 
 const navLinks = [
-  { name: 'Inicio', href: '/' },
-  { name: 'Nosotros', href: '/nosotros' },
-  { name: 'Productos', href: '/productos' },
-  { name: 'Galería', href: '/galeria' },
-  { name: 'Contáctanos', href: '/contacto' },
+  { name: 'Inicio', section: 'inicio' },
+  { name: 'Nosotros', section: 'nosotros' },
+  { name: 'Productos', section: 'productos' },
+  { name: 'Galería', section: 'galeria' },
+  { name: 'Contáctanos', section: 'contacto' },
 ]
+
+const scrollToSection = (sectionId: string) => {
+  const el = document.getElementById(sectionId)
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+}
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -48,12 +55,10 @@ export default function Navbar() {
           const sectionId = entry.target.id
           setActiveSection(sectionId)
 
-          // Sync URL during scroll without hash (only on root-managed paths)
-          if (pathname === '/' || navLinks.some(link => pathname === link.href)) {
-             const newPath = sectionId === 'inicio' ? '/' : `/${sectionId}`
-             if (window.location.pathname !== newPath) {
-                window.history.pushState(null, '', newPath)
-             }
+          // Sync URL during scroll without hash
+          const newPath = sectionId === 'inicio' ? '/' : `/${sectionId}`
+          if (window.location.pathname !== newPath) {
+            window.history.pushState(null, '', newPath)
           }
         }
       })
@@ -100,21 +105,20 @@ export default function Navbar() {
           {/* Center: Desktop Menu */}
           <div className="hidden md:flex items-center gap-10">
             {navLinks.map((link) => (
-              <Link
+              <button
                 key={link.name}
-                href={link.href}
-                scroll={false}
+                onClick={() => scrollToSection(link.section)}
                 className="relative group py-2"
               >
                 <span className="text-sm font-medium text-[#2B1B12] tracking-wide focus:outline-none">
                   {link.name.toUpperCase()}
                 </span>
                 <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-[#2B1B12] transform transition-transform duration-300 origin-center ${
-                  activeSection === (link.href === '/' ? 'inicio' : link.href.replace('/', '')) 
+                  activeSection === link.section
                     ? 'scale-x-100' 
                     : 'scale-x-0 group-hover:scale-x-100'
                 }`} />
-              </Link>
+              </button>
             ))}
           </div>
 
@@ -161,19 +165,17 @@ export default function Navbar() {
           <div className="md:hidden bg-dantojo-cream border-t border-dantojo-tan">
             <div className="flex flex-col py-4">
               {navLinks.map((link) => (
-                <Link
+                <button
                   key={link.name}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  scroll={false}
-                  className={`px-6 py-3 font-medium transition-colors ${
-                    activeSection === (link.href === '/' ? 'inicio' : link.href.replace('/', '')) 
+                  onClick={() => { scrollToSection(link.section); setIsOpen(false) }}
+                  className={`px-6 py-3 font-medium transition-colors text-left ${
+                    activeSection === link.section
                       ? 'text-dantojo-gold bg-dantojo-tan/20' 
                       : 'text-dantojo-coffee hover:bg-dantojo-tan/50'
                   }`}
                 >
                   {link.name}
-                </Link>
+                </button>
               ))}
             </div>
           </div>
