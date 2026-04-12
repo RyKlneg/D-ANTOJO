@@ -3,6 +3,7 @@
 import { ShoppingBag } from 'lucide-react'
 import ScrollReveal from './ScrollReveal'
 import { useCart } from '../context/CartContext'
+import Image from 'next/image'
 
 import Link from 'next/link'
 import { products } from '../data/products'
@@ -38,10 +39,12 @@ export default function Products() {
               >
                 {/* Product Image */}
                 <div className="aspect-square bg-white flex items-center justify-center overflow-hidden">
-                  <img
+                  <Image
                     src={product.image}
                     alt={product.name}
-                    className="w-[300px] h-[300px] object-cover transition-transform duration-500 group-hover:scale-110"
+                    width={400}
+                    height={400}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                 </div>
 

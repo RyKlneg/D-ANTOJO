@@ -1,4 +1,5 @@
 import { ArrowRight } from 'lucide-react'
+import Image from 'next/image'
 
 export default function Hero() {
   return (
@@ -39,9 +40,12 @@ export default function Hero() {
 
           {/* Hero Image */}
           <div className="relative h-[300px] md:h-[300px] lg:h-[400px] flex items-center justify-center animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
-            <img
+            <Image
               src="/images/Chocolate.png"
               alt="Chocolate Artesanal"
+              width={1200}
+              height={800}
+              priority
               className="absolute pointer-events-none select-none max-w-none
                          w-[500px] md:w-[400px] lg:w-[1200px]
                          -right-[80px] md:-right-[300px] lg:-right-[600px]
