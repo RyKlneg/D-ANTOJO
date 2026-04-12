@@ -5,14 +5,22 @@ import { Menu, X, ShoppingBag } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 
 const navLinks = [
-  { name: 'Inicio', href: '#inicio' },
-  { name: 'Nosotros', href: '#nosotros' },
-  { name: 'Productos', href: '#productos' },
-  { name: 'Galería', href: '#galeria' },
-  { name: 'Contáctanos', href: '#contacto' },
+  { name: 'Inicio', section: 'inicio' },
+  { name: 'Nosotros', section: 'nosotros' },
+  { name: 'Productos', section: 'productos' },
+  { name: 'Galería', section: 'galeria' },
+  { name: 'Contáctanos', section: 'contacto' },
 ]
+
+const scrollToSection = (sectionId: string) => {
+  const el = document.getElementById(sectionId)
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+}
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -44,7 +52,14 @@ export default function Navbar() {
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          setActiveSection(entry.target.id)
+          const sectionId = entry.target.id
+          setActiveSection(sectionId)
+
+          // Sync URL during scroll without hash
+          const newPath = sectionId === 'inicio' ? '/' : `/${sectionId}`
+          if (window.location.pathname !== newPath) {
+            window.history.pushState(null, '', newPath)
+          }
         }
       })
     }
@@ -69,38 +84,41 @@ export default function Navbar() {
   const currentBg = sectionColors[activeSection] || 'bg-dantojo-beige'
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-500 backdrop-blur-sm ${
-       !isHomePage ? 'bg-dantojo-beige' : 
-       isScrolled ? `${currentBg}` : 'bg-transparent'
-    }`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-500 backdrop-blur-sm ${!isHomePage ? 'bg-dantojo-beige' :
+      isScrolled ? `${currentBg}` : 'bg-transparent'
+      }`}>
       <div className="max-w-[1440px] mx-auto px-6 lg:pl-4 lg:pr-12">
         <div className="flex items-center h-20 relative">
           {/* Left: Logo */}
           <div className="flex-1 flex justify-start">
-            <a href="#inicio" className="inline-flex items-center gap-2">
-              <div className="relative">
+            <Link href="/" className="flex items-center group">
+              <div className="w-auto transform group-hover:scale-105 transition-transform duration-500">
                 <img
                   src="/images/D.png"
                   alt="D'Antojo Logo"
-                  className="h-16 w-auto object-contain"
+                  className="h-10 md:h-14 w-auto object-contain"
                 />
               </div>
-            </a>
+            </Link>
           </div>
 
           {/* Center: Desktop Menu */}
           <div className="hidden md:flex items-center gap-10">
             {navLinks.map((link) => (
-              <a
+              <button
                 key={link.name}
-                href={link.href}
+                onClick={() => scrollToSection(link.section)}
                 className="relative group py-2"
               >
-                <span className="text-sm font-medium text-[#2B1B12] tracking-wide">
+                <span className="text-sm font-medium text-[#2B1B12] tracking-wide focus:outline-none">
                   {link.name.toUpperCase()}
                 </span>
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#2B1B12] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center" />
-              </a>
+                <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-[#2B1B12] transform transition-transform duration-300 origin-center ${
+                  activeSection === link.section
+                    ? 'scale-x-100' 
+                    : 'scale-x-0 group-hover:scale-x-100'
+                }`} />
+              </button>
             ))}
           </div>
 
@@ -147,14 +165,17 @@ export default function Navbar() {
           <div className="md:hidden bg-dantojo-cream border-t border-dantojo-tan">
             <div className="flex flex-col py-4">
               {navLinks.map((link) => (
-                <a
+                <button
                   key={link.name}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className="px-6 py-3 text-dantojo-coffee font-medium hover:bg-dantojo-tan/50 transition-colors"
+                  onClick={() => { scrollToSection(link.section); setIsOpen(false) }}
+                  className={`px-6 py-3 font-medium transition-colors text-left ${
+                    activeSection === link.section
+                      ? 'text-dantojo-gold bg-dantojo-tan/20' 
+                      : 'text-dantojo-coffee hover:bg-dantojo-tan/50'
+                  }`}
                 >
                   {link.name}
-                </a>
+                </button>
               ))}
             </div>
           </div>

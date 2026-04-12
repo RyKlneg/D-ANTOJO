@@ -3,6 +3,7 @@
 import { ShoppingBag } from 'lucide-react'
 import ScrollReveal from './ScrollReveal'
 import { useCart } from '../context/CartContext'
+import Image from 'next/image'
 
 import Link from 'next/link'
 import { products } from '../data/products'
@@ -38,10 +39,12 @@ export default function Products() {
               >
                 {/* Product Image */}
                 <div className="aspect-square bg-white flex items-center justify-center overflow-hidden">
-                  <img
+                  <Image
                     src={product.image}
                     alt={product.name}
-                    className="w-[300px] h-[300px] object-cover transition-transform duration-500 group-hover:scale-110"
+                    width={400}
+                    height={400}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                 </div>
 
@@ -52,9 +55,45 @@ export default function Products() {
                   </h3>
 
                   <div className="flex justify-between items-center mb-4">
-                    <p className="text-dantojo-gold font-bold text-lg">
-                      {product.price}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-dantojo-gold font-bold text-lg">
+                        {product.price}
+                      </p>
+                      {product.slicePrice !== '-' && (
+                        <div className="relative group/tooltip">
+                          {/* Info badge */}
+                          <div className="w-5 h-5 rounded-full bg-dantojo-tan/60 hover:bg-dantojo-gold/20 border border-dantojo-gold/30 flex items-center justify-center cursor-default transition-colors duration-200">
+                            <span className="text-[9px] font-bold text-dantojo-coffee leading-none select-none">P&R</span>
+                          </div>
+
+                          {/* Tooltip */}
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 pointer-events-none
+                                          opacity-0 scale-95 translate-y-1
+                                          group-hover/tooltip:opacity-100 group-hover/tooltip:scale-100 group-hover/tooltip:translate-y-0
+                                          transition-all duration-200 ease-out z-20">
+                            {/* Arrow */}
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0
+                                            border-l-[6px] border-l-transparent
+                                            border-r-[6px] border-r-transparent
+                                            border-t-[6px] border-t-[#2B1B12]" />
+                            {/* Content */}
+                            <div className="bg-[#2B1B12] text-white rounded-xl px-4 py-3 shadow-premium w-max max-w-[180px]">
+                              <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold mb-2">Precios</p>
+                              <div className="flex flex-col gap-1.5">
+                                <div className="flex items-center justify-between gap-4">
+                                  <span className="text-[11px] text-white/70">🎂 Pastel completo</span>
+                                  <span className="text-[12px] font-bold text-dantojo-gold whitespace-nowrap">{product.price}</span>
+                                </div>
+                                <div className="flex items-center justify-between gap-4">
+                                  <span className="text-[11px] text-white/70">🍰 Rebanada</span>
+                                  <span className="text-[12px] font-bold text-dantojo-gold whitespace-nowrap">{product.slicePrice}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                     <span className="text-[10px] text-dantojo-coffee/50 uppercase tracking-widest font-medium italic">
                        Postre Artesanal
                     </span>
@@ -81,7 +120,7 @@ export default function Products() {
           {/* Footer Button */}
           <div className="flex justify-center">
             <Link 
-              href="/productos"
+              href="/catalogo"
               className="flex items-center gap-3 bg-[#2B1B12] text-white px-10 py-5 rounded-full font-medium hover:bg-dantojo-dark transition-all duration-300 shadow-premium uppercase tracking-widest text-sm"
             >
               <ShoppingBag size={22} />

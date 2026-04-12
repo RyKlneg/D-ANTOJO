@@ -19,6 +19,8 @@ export default function CartDrawer() {
     cartItems,
     removeItem,
     updateQuantity,
+    toggleItemType,
+    clearCart,
     subtotal
   } = useCart()
 
@@ -81,9 +83,13 @@ export default function CartDrawer() {
   }
 
   const handleFinalize = () => {
-    const whatsappNumber = '521234567890' // Placeholder
+    const whatsappNumber = '529931555701' // Placeholder
     const itemsList = cartItems
-      .map(item => `- ${item.name} x${item.quantity} (${item.price})`)
+      .map(item => {
+        const typeLabel = item.selectedType === 'slice' ? '(Rebanada)' : '(Pastel Completo)'
+        const activePrice = item.selectedType === 'cake' ? item.price : (item.slicePrice || item.price)
+        return `- ${item.name} ${typeLabel} x${item.quantity} (${activePrice})`
+      })
       .join('%0A')
 
     const paymentText = paymentMethod === 'tarjeta' ? 'Tarjeta' : paymentMethod === 'efectivo' ? 'Efectivo' : 'Pago en Sucursal'
@@ -91,7 +97,12 @@ export default function CartDrawer() {
     const message = `Hola! Me gustaría realizar un pedido de D'Antojo:%0A%0A*Pedido:* ${orderNumber}%0A*Método de Pago:* ${paymentText}%0A%0A*Productos:*%0A${itemsList}%0A%0A*Total:* $${subtotal.toLocaleString()} MXN%0A%0AGracias!`
 
     window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank')
-    setIsCartOpen(false)
+    
+    // Clear cart and show thank you screen
+    setTimeout(() => {
+      clearCart()
+      setStep(4)
+    }, 500)
   }
 
   return (
@@ -126,7 +137,7 @@ export default function CartDrawer() {
                 <div className="flex items-center gap-2">
                   <ShoppingBag className="text-dantojo-gold" size={24} />
                   <h2 className="text-xl font-display font-medium text-dantojo-dark">
-                    {step === 1 ? 'Tu Carrito' : step === 2 ? 'Método de Pago' : step === 2.5 ? 'Datos de Tarjeta' : 'Confirmación'}
+                    {step === 1 ? 'Tu Carrito' : step === 2 ? 'Método de Pago' : step === 2.5 ? 'Datos de Tarjeta' : step === 4 ? '¡Listo!' : 'Confirmación'}
                   </h2>
                 </div>
               </div>
@@ -185,11 +196,30 @@ export default function CartDrawer() {
                               </div>
                               <div className="flex justify-between items-center">
                                 <div className="space-y-0.5">
-                                  <p className="text-dantojo-gold font-bold">{item.price}</p>
-                                  {item.slicePrice && (
-                                    <p className="text-[10px] text-dantojo-coffee/40 uppercase tracking-tighter">
-                                      Rebanada: <span className="font-medium text-dantojo-coffee/60">{item.slicePrice}</span>
-                                    </p>
+                                  <p className="text-dantojo-gold font-bold">
+                                    {item.selectedType === 'cake' ? item.price : (item.slicePrice || item.price)}
+                                  </p>
+                                  {item.slicePrice && item.slicePrice !== '-' && (
+                                    <div className="flex bg-dantojo-beige/40 p-0.5 rounded-lg w-fit mt-1 border border-dantojo-tan/20">
+                                      {['cake', 'slice'].map((type) => (
+                                        <button
+                                          key={type}
+                                          onClick={() => type !== item.selectedType && toggleItemType(item.id)}
+                                          className={`relative px-2 py-0.5 text-[10px] uppercase font-bold tracking-tighter transition-colors z-10 ${
+                                            item.selectedType === type ? 'text-white' : 'text-dantojo-coffee/60 hover:text-dantojo-dark'
+                                          }`}
+                                        >
+                                          {item.selectedType === type && (
+                                            <motion.div
+                                              layoutId={`toggle-${item.id}`}
+                                              className="absolute inset-0 bg-[#2B1B12] rounded-md -z-10"
+                                              transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                                            />
+                                          )}
+                                          {type === 'cake' ? 'P' : 'R'}
+                                        </button>
+                                      ))}
+                                    </div>
                                   )}
                                 </div>
                                 <div className="flex items-center gap-3 bg-dantojo-beige/50 rounded-lg px-2 py-1">
@@ -254,8 +284,8 @@ export default function CartDrawer() {
                           key={method.id}
                           onClick={() => setPaymentMethod(method.id)}
                           className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 transition-all duration-300 ${paymentMethod === method.id
-                              ? 'border-dantojo-gold bg-dantojo-gold/5 shadow-md'
-                              : 'border-dantojo-tan bg-white hover:border-dantojo-tan/60'
+                            ? 'border-dantojo-gold bg-dantojo-gold/5 shadow-md'
+                            : 'border-dantojo-tan bg-white hover:border-dantojo-tan/60'
                             }`}
                         >
                           <div className={`p-3 rounded-xl ${paymentMethod === method.id ? 'bg-dantojo-gold text-white' : 'bg-dantojo-beige text-dantojo-coffee'}`}>
@@ -344,9 +374,9 @@ export default function CartDrawer() {
                       <p className="text-3xl font-bold text-dantojo-gold tracking-widest">{orderNumber}</p>
                     </div>
 
-                    <div className="bg-white p-6 rounded-3xl shadow-premium space-y-4 border border-dantojo-tan/50">
-                      <QRCodeSVG value={orderNumber} size={150} level="H" includeMargin />
-                      <p className="text-[10px] text-dantojo-coffee/60 uppercase tracking-widest">Escanea este código al pagar</p>
+                    <div className="bg-white p-6 rounded-3xl shadow-premium space-y-4 border border-dantojo-tan/50 flex flex-col items-center mx-auto">
+                      <QRCodeSVG value={orderNumber} size={150} level="H" includeMargin className="mx-auto" />
+                      <p className="text-[10px] text-dantojo-coffee/60 uppercase tracking-widest text-center">Escanea este código al pagar</p>
                     </div>
 
                     <div className="w-full bg-dantojo-beige/30 p-4 rounded-2xl text-left space-y-2">
@@ -372,6 +402,42 @@ export default function CartDrawer() {
                     <p className="text-[10px] text-dantojo-coffee/60">
                       Al finalizar, te enviaremos a WhatsApp para confirmar los detalles de entrega.
                     </p>
+                  </motion.div>
+                )}
+
+                {step === 4 && (
+                  <motion.div
+                    key="step4"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="flex-1 p-6 flex flex-col items-center justify-center text-center space-y-8"
+                  >
+                    <div className="w-24 h-24 bg-dantojo-gold/10 text-dantojo-gold rounded-full flex items-center justify-center shadow-soft">
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: 'spring', damping: 10, stiffness: 100, delay: 0.2 }}
+                      >
+                        <CheckCircle2 size={56} />
+                      </motion.div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h3 className="text-3xl font-display text-dantojo-dark">¡Muchas Gracias!</h3>
+                      <p className="text-dantojo-coffee/70 max-w-[280px]">
+                        Tu pedido ha sido enviado con éxito. En breve nos pondremos en contacto contigo para los detalles de entrega.
+                      </p>
+                    </div>
+
+                    <div className="w-full pt-8">
+                      <button
+                        onClick={() => setIsCartOpen(false)}
+                        className="w-full bg-[#2B1B12] text-white py-4 rounded-2xl font-bold uppercase tracking-widest hover:bg-dantojo-dark transition-all shadow-premium active:scale-95"
+                      >
+                        Volver a la tienda
+                      </button>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>

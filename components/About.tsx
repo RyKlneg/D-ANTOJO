@@ -1,4 +1,5 @@
 import ScrollReveal from './ScrollReveal'
+import Counter from './Counter'
 
 export default function About() {
   return (
@@ -35,11 +36,15 @@ export default function About() {
                 </p>
                 <div className="pt-4 grid grid-cols-2 gap-8">
                   <div>
-                    <p className="text-3xl font-display font-bold text-dantojo-gold">25+</p>
+                    <p className="text-3xl font-display font-bold text-dantojo-gold">
+                      <Counter value={25} suffix="+" />
+                    </p>
                     <p className="text-sm uppercase tracking-wider">Años de Tradición</p>
                   </div>
                   <div>
-                    <p className="text-3xl font-display font-bold text-dantojo-gold">100k</p>
+                    <p className="text-3xl font-display font-bold text-dantojo-gold">
+                      <Counter value={100} suffix="k" />
+                    </p>
                     <p className="text-sm uppercase tracking-wider">Clientes Felices</p>
                   </div>
                 </div>
